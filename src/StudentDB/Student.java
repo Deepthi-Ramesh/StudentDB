@@ -3,17 +3,16 @@ package StudentDB;
 public class Student {
      int Roll_No;
      String Student_Name;
-
-    int Year; 
-    String Dept;
-    String Fees_Status;
-    String Quota;
-    float CGPA ;
-    String Address;
-    String phone_No;
+     int Year; 
+     String Dept;
+     String Fees_Status;
+     String Quota;
+     float CGPA ;
+     String Address;
+     long phone_No;
      Student next;
      
-public Student(int Roll_No,String Student_Name, int Year , String Dept , String Fees_Status ,String Quota , float CGPA , String Address,String phone_No) {
+public Student(int Roll_No,String Student_Name, int Year , String Dept , String Fees_Status ,String Quota , float CGPA , String Address,long phone_No) {
 		     this.Roll_No=Roll_No;
 		     this.Student_Name=Student_Name;
 	         this.Year=Year;

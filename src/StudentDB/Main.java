@@ -7,10 +7,7 @@ public class Main {
 	   static Scanner sc=new Scanner(System.in);
 	   
 	  //main function 
-    public static void main(String[] args)throws Exception  {
-    	
-    	     	BufferedWriter bw=new BufferedWriter(new FileWriter("D:\\Deepu\\Full Stack\\output.txt"));
-    		    BufferedReader br=new BufferedReader(new FileReader("D:\\Deepu\\Full Stack\\output.txt"));
+       public static void main(String[] args)throws Exception  {
     	
 	            printDash();
 	   	        System.out.println("Welcome to Student Database portal");
@@ -18,13 +15,13 @@ public class Main {
 		
 		do{
 			// [TODO]-default function
-			// [TODO]-update details function
-			// [TODO]-JDBC
-			// [TODO]-proper alert msg and spelling mistake
-			// [TODO]-phone no type change
-			// [TODO]-validation functions in separate file
+			// [TODO]-update details function -Done
+			// [TODO]-JDBC --Done
+			// [TODO]-proper alert msg and spelling mistake -Done
+			// [TODO]-phone no type change - Done
+			// [TODO]-validation functions in separate file - Done
 			
-			details();
+			
 			System.out.println("Options available");
 			System.out.println("1.Add a new Student");
 			System.out.println("2.Update the marks");
@@ -37,7 +34,7 @@ public class Main {
 			case 1:
 				System.out.println("Enter student Roll No:");
 		      	int rollno=sc.nextInt();
-			   	AddStudent(bw,rollno);
+			   	AddStudent(rollno);
 			   	break;
 			case 2:
 				UpdateStudent();
@@ -46,7 +43,7 @@ public class Main {
 				deleteStudent();
 				break;
 			case 4:
-				DisplayDetails(br);
+				DisplayDetails();
 				break;
 			case 5:
 				System.exit(0); 
@@ -67,7 +64,7 @@ public class Main {
     }
     
    //Add student Function 
-    public static void AddStudent(BufferedWriter bw , int rollno) {
+    public static void AddStudent( int rollno) throws Exception  {
     	 String name="";
     	 int Year=0; 
     	 int chFe=0;
@@ -76,14 +73,15 @@ public class Main {
     	 int chQ=0;
     	 float CGPA=0; 
     	 String Address=""; 
-    	 String  phone_No=""; 
+    	 long phone_No=0; 
     	 String Fees_Status="";
     	 String Quota="";
     			 
-    	 if(checkUnique(rollno)) {
+    	 if(DBclass.FindRollNo(rollno)) {
        	  System.out.println("Sorry :) Student RollNo should be unique");
        	  return;
          }
+    	 
     	name=Validation.Namevalidation(name);
     	Year=Validation.Yearvalidation(Year);
     	Dept=Validation.Deptvalidation(ch);
@@ -94,7 +92,19 @@ public class Main {
     	phone_No=Validation.phonevalidation();
          
       	  Student student=new Student(rollno,name,Year,Dept,Fees_Status,Quota,CGPA,Address,phone_No);
-          // bw.write(student.Student_Name+'\n');
+      	  int cnt=DBclass.AddStudent(student);
+      	  System.out.println("\n");
+      	  if(cnt!=0) {
+      		 System.out.println("Student Added successfully\n"); 
+      		 System.out.println(cnt);
+      	  }
+      	  else {
+      		 System.out.println("not added"); 
+      		
+      	  }
+         
+         
+      	  // bw.write(student.Student_Name+'\n');
           // bw.flush();
           if(head==null)
     	     head=student;
@@ -108,26 +118,33 @@ public class Main {
     	}
 
     //DisplayDetails
-   public static void DisplayDetails(BufferedReader br) throws IOException{
+   public static void DisplayDetails() throws Exception{
       	System.out.println("Enter student Roll No:");
       	int rollno=sc.nextInt();
-      	Student curr=head;
-    	while(curr!=null) {
-    		if(curr.Roll_No==rollno) {
-    			printDash();
-	   	        System.out.println("Student Details");
-	            printDash();
-    			System.out.println("Roll No : "+ curr.Roll_No);
-    			System.out.println("Name : "+ curr.Student_Name);
-             	System.out.println("Year : "+curr.Year);
-             	System.out.println("Dept : "+curr.Dept);
-             	System.out.println("Fees_Status : "+curr.Fees_Status);
-             	System.out.println("Quota : "+curr.Quota);
-             	System.out.println("CGPA : "+curr.CGPA);
-             	System.out.println("Address : "+curr.Address);
-             	System.out.println("phone_No : "+curr.phone_No);
-             	printDash();
-	   	        System.out.println("\n");
+      	String details = DBclass.DisplayStudent(rollno);
+      	System.out.println(details);
+//      	Student curr=head;
+//    		if(checkUnique(rollno)){
+//    			printDash();
+//	   	        System.out.println("Student Details");
+//	            printDash();
+//	            System.out.println("\n");
+//    			System.out.println("Roll No : "+ curr.Roll_No);
+//    			System.out.println("Name : "+ curr.Student_Name);
+//             	System.out.println("Year : "+curr.Year);
+//             	System.out.println("Dept : "+curr.Dept);
+//             	System.out.println("Fees_Status : "+curr.Fees_Status);
+//             	System.out.println("Quota : "+curr.Quota);
+//             	System.out.println("CGPA : "+curr.CGPA);
+//             	System.out.println("Address : "+curr.Address);
+//             	System.out.println("phone_No : "+curr.phone_No);
+//             	printDash();
+//	   	        System.out.println("\n");
+//	   	        
+//    		   }
+//   	        else {
+//   	        	System.out.println("Student RollNo not found");
+//   	        }
 
 //             	//String line=br.readLine();
 //             	while (line != null) {
@@ -137,16 +154,13 @@ public class Main {
 //    			}
 //             	br.close();
 //             	return;
-    		}
-    		curr=curr.next;
+    	
     	}
-    	System.out.println("Student RollNo not found");
-    }
 
   //CheckUnique Function
     public static boolean checkUnique(int rollno){
       	Student curr=head;
-    	while(curr!=null) {
+    	while(curr!=null){
         		if(curr.Roll_No==rollno) {
                  return true;
     		}
@@ -156,96 +170,168 @@ public class Main {
     }
    
   // Delete student function
-    public static void deleteStudent(){
+    public static void deleteStudent() throws Exception{
     	System.out.println("Enter student Roll No:");
       	int rollno=sc.nextInt();
-      	Student curr=head;
-      	Student prev=head ;
-      	if(head.Roll_No==rollno) {
-      		head=head.next;
-      		System.out.println("Student Deleted sucessfully");
+      	int cnt=DBclass.DeleteStudent(rollno);
+      	if(cnt!=0){
+        	System.out.println("Deleted SuceesFully");
       	}
       	else {
-      		while(curr.next!=null) {
-      			if(curr.Roll_No==rollno) {
-      				System.out.println("Student Deleted sucessfully");
-      				curr=curr.next;
-      				prev.next=curr;	
-      			}
-      				prev=curr;
-      				curr=curr.next;
-      		}
+      		System.out.println("Roll NO  not found");
       	}
-      	if(curr==null) {
-      		System.out.println("Student Not Found ");
-      	}
+//      	Student curr=head;
+//      	Student prev=head ;
+//      	if(head.Roll_No==rollno) {
+//      		head=head.next;
+//      		System.out.println("Student Deleted sucessfully");
+//      	}
+//      	else {
+//      		while(curr.next!=null) {
+//      			if(curr.Roll_No==rollno) {
+//      				System.out.println("Student Deleted sucessfully");
+//      				curr=curr.next;
+//      				prev.next=curr;	
+//      			}
+//      				prev=curr;
+//      				curr=curr.next;
+//      		}
+//      	}
+//      	if(curr==null) {
+//      		System.out.println("Student Not Found ");
+//      	}
        }
     
     // update Student function
-    public static void UpdateStudent(){
+    public static void UpdateStudent()throws Exception{
       	System.out.println("Enter student Roll No:");
       	int rollno=sc.nextInt();
       	Student curr=head;
     		
-    		if(checkUnique(rollno)){
+    		if(DBclass.FindRollNo(rollno)){
     			System.out.println("What Details you have to update ?");
-         	    System.out.println("\n 1.Student_Name \n2.Year \n3.Dept \n4.Fees_Status \n5.Quota \n6.CGPA \n7.Address \n8.phone_No");
+         	    System.out.println("1.Student_Name \n2.Year \n3.Dept \n4.Fees_Status \n5.Quota \n6.CGPA \n7.Address \n8.phone_No");
     			int choice=sc.nextInt();
     			
     	    switch(choice) {
     			case 1:
-	    			 System.out.println("Exixting Name :"+curr.Student_Name);
-	   			     System.out.println("Update Your name");
+	    			
+	   			     System.out.println("Update Your Name");
 	   			     String name="";
 	   			     name=Validation.Namevalidation(name);
-	   			     curr.Student_Name=name;
+	   			    // curr.Student_Name=name;
+                      int cnt=DBclass.UpdateStudentStr("Student_Name",name,rollno);
+                      if(cnt!=0) {
+         			     System.out.println("Updated Name Successfully");
+                      }
+                      else {
+         			     System.out.println("Not Updated ");
+                      }
+	   
 	   			     break;
     			case 2:
-    				 System.out.println("Exixting Year:"+curr.Year);
+    				
     			     System.out.println("Update Your Year");
     			     int year=0;
     			     year =Validation.Yearvalidation(year);
-    			     curr.Year=year;
+    			     //curr.Year=year;
+    			     long FCGPA=(long)year;
+    			     cnt=DBclass.UpdateStudentlong("year", FCGPA, rollno);
+                     if(cnt!=0) {
+                         System.out.println("Updated Year Successfully");
+                     }
+                     else {
+        			     System.out.println("Not Updated ");
+                     }
+    			
     			     break;
     			case 3:
-	   				 System.out.println("Exixting Dept :"+curr.Dept);
+	   				// System.out.println("Existing Dept :"+curr.Dept);
 	   			     System.out.println("Update Your Dept ");
 	   			     int ch=0;
 	   			     String Dept=Validation.Deptvalidation(ch);
-	   			     curr.Dept=Dept;
+	   			    // curr.Dept=Dept;
+	   			     cnt=DBclass.UpdateStudentStr("dept",Dept,rollno);
+		   			  if(cnt!=0) {
+	                      System.out.println("Updated Dept Successfully");
+	                  }
+	                  else {
+	     			     System.out.println("Not Updated ");
+	                  }
+	   			   
 	   			     break;
     			case 4:
-	   				 System.out.println("Exixting Fee_Status :"+curr.Fees_Status);
-	   			     System.out.println("Update Your name ");
+	   				// System.out.println("Existing Fee_Status :"+curr.Fees_Status);
+	   			     System.out.println("Update Your Fee_Status ");
 	   			     int chFe=0;
 	   			     String Feestatus=Validation.Feesvalidation(chFe);
-	   			     curr.Fees_Status=Feestatus;
+	   			    // curr.Fees_Status=Feestatus;
+	   			     cnt=DBclass.UpdateStudentStr("fees_status",Feestatus,rollno);
+		   			  if(cnt!=0) {
+	                      System.out.println("Updated Fee_Status Successfully");
+	                  }
+	                  else {
+	     			     System.out.println("Not Updated ");
+	                  }
+	   			     
+	   			  
 	   			     break;
     			case 5:
-	   				 System.out.println("Exixting Name :"+curr.Quota);
-	   			     System.out.println("Update Your name ");
+	   				// System.out.println("Existing Quota :"+curr.Quota);
+	   			     System.out.println("Update Your Quota");
 	   			     int chQ=0;
 	   			     String Quota=Validation.Quotavalidation(chQ);
-	   			     curr.Quota=Quota;
+	   			     //curr.Quota=Quota; 
+	   			     cnt=DBclass.UpdateStudentStr("quota",Quota,rollno);
+		   			  if(cnt!=0) {
+	                      System.out.println("Updated Quota Successfully");
+	                  }
+	                  else {
+	     			     System.out.println("Not Updated ");
+	                  }
+	   			     
 	   			     break;
     			case 6:
-	   				 System.out.println("Exixting Name :"+curr.CGPA);
-	   			     System.out.println("Update Your name ");
+	   				 //System.out.println("Existing Name :"+curr.CGPA);
+	   			     System.out.println("Update Your CGPA");
 	   			     float CGPA =Validation.CGPAvalidation();
-	   			     curr.CGPA=CGPA;
+	   			     //curr.CGPA=CGPA;
+	   			    long FCGPA2=(long)CGPA;
+	   			     cnt=DBclass.UpdateStudentlong("CGPA",FCGPA2,rollno);
+		   			  if(cnt!=0) {
+	                      System.out.println("Updated CGPA Successfully");
+	                  }
+	                  else {
+	     			     System.out.println("Not Updated ");
+	                  }
 	   			     break;
     			case 7:
-	   				 System.out.println("Exixting Name :"+curr.Address);
-	   			     System.out.println("Update Your name ");
+	   				 //System.out.println("Existing Address :"+curr.Address);
+	   			     System.out.println("Update Your Address");
 	   			     String Address =Validation.Addressvalidation();
-	   			     curr.Address=Address;
+	   			     //curr.Address=Address;
+	   			     cnt=DBclass.UpdateStudentStr("Address",Address,rollno);
+		   			  if(cnt!=0) {
+	                      System.out.println("Updated Address Successfully");
+	                  }
+	                  else {
+	     			     System.out.println("Not Updated ");
+	                  }
 	   			     break;
     			case 8:
-	   				 System.out.println("Exixting Name :"+curr.phone_No);
-	   			     System.out.println("Update Your name ");
-	   			     String phone_No =Validation.phonevalidation();
-	   			     curr.phone_No=phone_No;
-	   			     break;
+	   				 //System.out.println("Existing Phone no :"+curr.phone_No);
+	   			     System.out.println("Update Your phone no");
+	   			     long phone_No =Validation.phonevalidation();
+	   			     System.out.println("");
+	   			    // curr.phone_No=phone_No;
+		   			  cnt=DBclass.UpdateStudentlong("phone_No",phone_No,rollno);
+		   			  if(cnt!=0) {
+	                      System.out.println("Updated Phone No Successfully");
+	                  }
+	                  else {
+	     			     System.out.println("Not Updated ");
+	                  }
+		   			     break;
     			}
     		}
     		else {
@@ -256,7 +342,7 @@ public class Main {
     
   
 public static void details(){
-	Student stud1=new Student(1,"Deepthi",1,"Civil","paid","Govt",(float) 5.6,"kanniah st","1234512345");
+	Student stud1=new Student(1,"Deepthi",1,"Civil","paid","Govt",(float) 5.6,"kanniah st",1234512345);
 	if(head==null) {
 		head =stud1;
 	}else {

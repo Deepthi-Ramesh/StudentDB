@@ -152,14 +152,21 @@ public class Validation{
 		 return Address;
 		 
 		}
-		public static String phonevalidation(){
-			String phone_No="";
-			  while(phone_No=="") {
+		public static long phonevalidation(){
+			long phone_No=0;
+			  while(phone_No==0) {
 				    try {
 				 	   System.out.println("Enter  phone_No:");
-					       phone_No=sc.next();
-					       if(phone_No.length()<10) {
-					    	   phone_No="";
+					       phone_No=sc.nextLong();
+					       long dum=phone_No;
+					       int cnt=0;
+					       while(dum>0) {
+					    	   cnt++;
+					    	   dum=dum/10;
+					       }
+					       
+					       if(cnt!=10) {
+					    	   phone_No=0;
 					    	  System.out.println("Phone number should be 10 Digits");
 					       }
 				      }
