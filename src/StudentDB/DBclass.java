@@ -7,39 +7,45 @@ public class DBclass {
 		  //TODO -- FUNCTION FOR DISPLAY A STUDENT --Done
 	// TODO --- FUNCTION FOR DISPLAY A STUDENT  already existing rollno --rollno
 	       //TODO -- DBCONNECTION
+	// TODO -- Handle exception for stduent roll number
 	
 	public static  String url="jdbc:mysql://localhost:3306/deepu";
 	public static String uname="root";
 	public static String pass="pass@1234";
    
 	
-	public static Connection con;
+	//public static Connection con;
 	public static PreparedStatement preparedstatement;
 	public static ResultSet resultset;
 	
-	public static void Connect() throws Exception{
+	public static Connection Connect() throws Exception{
 		try{
+			
 			Class.forName("com.mysql.cj.jdbc.Driver");
-             con = DriverManager.getConnection(url, uname, pass);
-             System.out.print("connection Established");
+			 //System.out.print("connection Established");
+			return DriverManager.getConnection(url, uname, pass);
+            
 			}
-		catch(Exception e) {
-			System.out.println(e);
+		catch(Exception ex) {
+			   System.out.println(ex.getMessage());
+		        System.out.println("couldn't connect!");
+		        throw new RuntimeException(ex);
 			}
+		
 
 	}
 	
-	public static void Close() throws SQLException{
-		if(resultset  != null) {
-			resultset.close();
-		}
-		if(preparedstatement!=null) {
-			preparedstatement.close();
-		}
-		if(con !=null) {
-			con.close();
-		}
-	}
+//	public static void Close() throws SQLException{
+//		if(resultset  != null) {
+//			resultset.close();
+//		}
+//		if(preparedstatement!=null) {
+//			preparedstatement.close();
+//		}
+//		if(con !=null) {
+//			con.close();
+//		}
+//	}
 
 public static void main(String[] args) throws Exception  {
 	        Connect();
@@ -47,7 +53,8 @@ public static void main(String[] args) throws Exception  {
 //	        System.out.println(flag);
 	}
     public static int AddStudent(Student student) throws Exception  {
-    	Connect();
+    	Connection con=Connect();
+
     	String query = "INSERT INTO STUDENTDB VALUES(?,?,?,?,?,?,?,?,?)";
     	preparedstatement=con.prepareStatement(query);
     	preparedstatement.setInt(1,student.Roll_No);
@@ -61,22 +68,22 @@ public static void main(String[] args) throws Exception  {
     	preparedstatement.setLong(9, student.phone_No);
        	int count =preparedstatement.executeUpdate();
        
-    	Close();
+    	//Close();
     	return count;
     	
     }
     public static int UpdateStudentStr(String parameter,String str ,int rollno) throws Exception  {
-    	Connect();
+    	Connection con=Connect();
     	String query = "UPDATE STUDENTDB SET " + parameter + "=? WHERE ROLL_NO=? ";
     	preparedstatement=con.prepareStatement(query);
         preparedstatement.setString(1,str);
         preparedstatement.setInt(2,rollno);
     	int count=preparedstatement.executeUpdate();
-        Close();
+       // Close();
     	return count;
 }
     public static int UpdateStudentlong(String parameter,long value ,int rollno) throws Exception  {
-    	Connect();
+    	Connection con=Connect();
     	String query = "UPDATE STUDENTDB SET " + parameter + "=? WHERE ROLL_NO=? ";
     	preparedstatement=con.prepareStatement(query);
     	if(parameter=="year") {
@@ -93,12 +100,13 @@ public static void main(String[] args) throws Exception  {
    
        	int count=preparedstatement.executeUpdate();
        
-        Close();
+       // Close();
     	return count;
     	
 }
     public static int DeleteStudent(int rollno)throws Exception {
-    	Connect();
+    	Connection con=Connect();
+
         int count=0;
         	if(FindRollNo(rollno)) {
         		String query = "DELETE FROM STUDENTDB WHERE ROLL_NO = ?";
@@ -106,12 +114,13 @@ public static void main(String[] args) throws Exception  {
             	preparedstatement.setInt(1,rollno);
                 count =preparedstatement.executeUpdate();
             }
-    	 Close();
+    	// Close();
     	return count;
     }
     
     public static String DisplayStudent(int rollno)throws Exception {
-    	Connect();
+    	Connection con=Connect();
+
     	 String details ="";
         	if(FindRollNo(rollno)) {
         		String query = "SELECT * FROM STUDENTDB WHERE ROLL_NO = ?";
@@ -126,11 +135,12 @@ public static void main(String[] args) throws Exception  {
         	else {
         		 details ="Roll no not found";
         	}
-    	 Close();
+    	 //Close();
     	return details;
     }
 public static boolean FindRollNo(int rollno)throws Exception {
-	Connect();
+	Connection con=Connect();
+
     String qu="SELECT ROLL_NO FROM STUDENTDB";
     Statement st = con.createStatement();
     ResultSet rs=st.executeQuery(qu);
@@ -138,7 +148,7 @@ public static boolean FindRollNo(int rollno)throws Exception {
     while(rs.next()) {
     	no=rs.getInt("roll_no");
     	System.out.println(no);
-    	System.out.println(rollno);
+    	//System.out.println(rollno);
     	if(no==rollno) {
     		flag=true;
     		break;
@@ -147,7 +157,7 @@ public static boolean FindRollNo(int rollno)throws Exception {
     		flag=false;
     	}
     }
-	  Close();
+	  //Close();
 	return flag;
 }
 }

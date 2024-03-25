@@ -20,7 +20,10 @@ public class Main {
 			// [TODO]-proper alert msg and spelling mistake -Done
 			// [TODO]-phone no type change - Done
 			// [TODO]-validation functions in separate file - Done
-			
+			// [TODO]-phone no type change - Done
+			// [TODO]-rollno exception 
+			// [TODO]-enter address
+			//// [TODO]-loading  in java
 			
 			System.out.println("Options available");
 			System.out.println("1.Add a new Student");
@@ -78,7 +81,7 @@ public class Main {
     	 String Quota="";
     			 
     	 if(DBclass.FindRollNo(rollno)) {
-       	  System.out.println("Sorry :) Student RollNo should be unique");
+       	  System.out.println("Sorry :) Student RollNo already Existing");
        	  return;
          }
     	 
@@ -96,7 +99,7 @@ public class Main {
       	  System.out.println("\n");
       	  if(cnt!=0) {
       		 System.out.println("Student Added successfully\n"); 
-      		 System.out.println(cnt);
+      		 //System.out.println(cnt);
       	  }
       	  else {
       		 System.out.println("not added"); 

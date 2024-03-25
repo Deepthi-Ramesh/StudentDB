@@ -111,6 +111,7 @@ public class Validation{
 					        	    break;
 					            default :
 					        	 System.out.println("Enter the Right option"); 
+					        	 chQ=0;
 				 	         }
 				      }
 				    catch(InputMismatchException e) {
